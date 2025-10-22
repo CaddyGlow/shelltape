@@ -17,10 +17,7 @@ pub fn list_commands(limit: usize, filter: Option<String>) -> Result<()> {
     }
 
     // Print header
-    println!(
-        "{:<20} {:<8} {:<50} {}",
-        "TIME", "STATUS", "COMMAND", "DIRECTORY"
-    );
+    println!("{:<20} {:<8} {:<50} DIRECTORY", "TIME", "STATUS", "COMMAND");
     println!("{}", "─".repeat(100));
 
     // Print commands

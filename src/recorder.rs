@@ -1,7 +1,7 @@
 use crate::models::Command;
 use crate::storage::Storage;
 use anyhow::{Context, Result};
-use chrono::DateTime;
+use chrono::{DateTime, Utc};
 
 /// Command recorder that captures command execution details
 pub struct Recorder {
