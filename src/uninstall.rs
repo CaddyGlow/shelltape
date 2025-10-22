@@ -1,12 +1,12 @@
 use crate::cli::Shell;
-use anyhow::{anyhow, Context, Result};
+use anyhow::{Context, Result, anyhow};
 use std::fs;
 
 /// Uninstall shell hooks
 pub fn uninstall(shell: Option<Shell>) -> Result<()> {
     let shell = shell.or_else(Shell::detect).ok_or_else(|| {
         anyhow!(
-            "Could not detect shell. Please specify explicitly with --shell (bash, zsh, or fish)"
+            "Could not detect shell. Please specify explicitly with --shell (bash, zsh, fish, or powershell)"
         )
     })?;
 
@@ -26,13 +26,16 @@ pub fn uninstall(shell: Option<Shell>) -> Result<()> {
             fs::remove_file(&hook_file_path).with_context(|| {
                 format!("Failed to remove hook file: {}", hook_file_path.display())
             })?;
-            println!("  ✓ Removed hook file from {}", hook_file_path.display());
+            println!("  [OK] Removed hook file from {}", hook_file_path.display());
         }
     }
 
-    println!("\n✓ Shelltape uninstalled successfully!");
+    println!("\nShelltape uninstalled successfully!");
     println!("\nTo complete the uninstall:");
-    println!("  1. Restart your shell or run: source ~/{}",shell.rc_file());
+    println!(
+        "  1. Restart your shell or run: source ~/{}",
+        shell.rc_file()
+    );
     println!("  2. Optionally remove data: rm -rf ~/.shelltape/");
 
     Ok(())
@@ -44,7 +47,7 @@ fn remove_from_rc_file(shell: Shell) -> Result<()> {
     let rc_path = home_dir.join(shell.rc_file());
 
     if !rc_path.exists() {
-        println!("  ℹ RC file not found: {}", rc_path.display());
+        println!("  [INFO] RC file not found: {}", rc_path.display());
         return Ok(());
     }
 
@@ -55,11 +58,15 @@ fn remove_from_rc_file(shell: Shell) -> Result<()> {
     let hook_line = match shell {
         Shell::Bash | Shell::Zsh => format!("source ~/.shelltape/{}", shell.hook_file()),
         Shell::Fish => format!("source ~/.shelltape/{}", shell.hook_file()),
+        Shell::Powershell => format!(". ~\\.shelltape\\{}", shell.hook_file()),
     };
 
     // Check if hook line exists
     if !content.contains(&hook_line) {
-        println!("  ℹ Shelltape hooks not found in {}", rc_path.display());
+        println!(
+            "  [INFO] Shelltape hooks not found in {}",
+            rc_path.display()
+        );
         return Ok(());
     }
 
@@ -100,7 +107,7 @@ fn remove_from_rc_file(shell: Shell) -> Result<()> {
     fs::write(&rc_path, new_content)
         .with_context(|| format!("Failed to write to: {}", rc_path.display()))?;
 
-    println!("  ✓ Removed hooks from {}", rc_path.display());
+    println!("  [OK] Removed hooks from {}", rc_path.display());
 
     Ok(())
 }

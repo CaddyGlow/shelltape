@@ -23,10 +23,7 @@ pub fn clean_commands(older_than_days: u64, yes: bool) -> Result<()> {
         .count();
 
     if would_remove == 0 {
-        println!(
-            "No commands older than {} days found",
-            older_than_days
-        );
+        println!("No commands older than {} days found", older_than_days);
         return Ok(());
     }
 

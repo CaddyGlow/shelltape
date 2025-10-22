@@ -57,7 +57,10 @@ pub fn execute_with_capture(command: &str, cwd: &str) -> Result<ExecutionResult>
     drop(pair.slave);
 
     // Read output from PTY master
-    let mut reader = pair.master.try_clone_reader().context("Failed to clone reader")?;
+    let mut reader = pair
+        .master
+        .try_clone_reader()
+        .context("Failed to clone reader")?;
     let output = Arc::new(Mutex::new(Vec::new()));
     let output_clone = Arc::clone(&output);
 
@@ -84,10 +87,7 @@ pub fn execute_with_capture(command: &str, cwd: &str) -> Result<ExecutionResult>
     });
 
     // Handle stdin forwarding for interactive apps
-    let mut writer = pair
-        .master
-        .take_writer()
-        .context("Failed to get writer")?;
+    let mut writer = pair.master.take_writer().context("Failed to get writer")?;
 
     // Spawn thread to forward stdin to PTY (for interactive commands)
     let stdin_thread = thread::spawn(move || {

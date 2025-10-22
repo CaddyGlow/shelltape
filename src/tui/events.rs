@@ -1,6 +1,6 @@
 use crate::tui::app::{App, ViewMode};
-use crossterm::event::{self, Event, KeyCode, KeyEvent, KeyModifiers};
 use anyhow::Result;
+use crossterm::event::{self, Event, KeyCode, KeyEvent, KeyModifiers};
 
 /// Handle keyboard input events
 pub fn handle_key_event(app: &mut App, key: KeyEvent) -> Result<()> {

@@ -1,10 +1,10 @@
 use crate::tui::app::{App, ViewMode};
 use ratatui::{
+    Frame,
     layout::{Constraint, Direction, Layout, Rect},
     style::{Color, Modifier, Style},
     text::{Line, Span},
     widgets::{Block, Borders, List, ListItem, Paragraph, Wrap},
-    Frame,
 };
 
 /// Draw the entire UI
@@ -12,9 +12,9 @@ pub fn draw(f: &mut Frame, app: &App) {
     let chunks = Layout::default()
         .direction(Direction::Vertical)
         .constraints([
-            Constraint::Length(3),  // Search bar
-            Constraint::Min(0),     // Command list or detail view
-            Constraint::Length(2),  // Status bar
+            Constraint::Length(3), // Search bar
+            Constraint::Min(0),    // Command list or detail view
+            Constraint::Length(2), // Status bar
         ])
         .split(f.area());
 
@@ -143,12 +143,7 @@ fn draw_preview(f: &mut Frame, app: &App, area: Rect) {
 
         format!(
             "Command: {}\n\nDirectory: {}\nDuration: {}\nExit Code: {}\nSession: {}\n\nOutput:\n{}",
-            cmd.command,
-            cmd.cwd,
-            duration_display,
-            cmd.exit_code,
-            session_display,
-            output_display
+            cmd.command, cmd.cwd, duration_display, cmd.exit_code, session_display, output_display
         )
     } else {
         "No command selected".to_string()

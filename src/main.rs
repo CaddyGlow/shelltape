@@ -26,7 +26,10 @@ fn main() -> Result<()> {
         Commands::Uninstall { shell } => {
             uninstall::uninstall(shell)?;
         }
-        Commands::Exec { command, session_id } => {
+        Commands::Exec {
+            command,
+            session_id,
+        } => {
             // Join command parts
             let command_str = command.join(" ");
             let cwd = std::env::current_dir()
@@ -62,7 +65,9 @@ fn main() -> Result<()> {
             output,
         } => {
             let recorder = recorder::Recorder::new()?;
-            recorder.record(command, output, exit_code, start_time, end_time, cwd, session_id)?;
+            recorder.record(
+                command, output, exit_code, start_time, end_time, cwd, session_id,
+            )?;
         }
         Commands::Browse => {
             tui::run()?;

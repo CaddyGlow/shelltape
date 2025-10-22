@@ -1,10 +1,10 @@
 # Shelltape Usage Guide
 
-## ✅ Installation Complete!
+## Installation Complete!
 
 You've successfully installed shelltape with PTY-based output capture!
 
-## 🎯 How to Use
+## How to Use
 
 ### Method 1: Direct Command Wrapping (Most Reliable)
 
@@ -61,7 +61,7 @@ alias pip='shelltape_exec pip'
 
 Then reload: `source ~/.zshrc`
 
-## 🔍 Viewing Your History
+## Viewing Your History
 
 ### List Recent Commands
 ```bash
@@ -110,7 +110,7 @@ Shows:
 - Most used commands
 - Average execution time
 
-## 💡 Tips
+## Tips
 
 ### Check What's Being Captured
 
@@ -155,7 +155,7 @@ wc -l ~/.shelltape/commands.jsonl
 cat ~/.shelltape/commands.jsonl | jq 'select(.command | contains("git"))'
 ```
 
-## 🧹 Maintenance
+## Maintenance
 
 ### Clean Old Data
 ```bash
@@ -174,7 +174,7 @@ shelltape uninstall
 rm -rf ~/.shelltape/  # Remove all data
 ```
 
-## 🐛 Troubleshooting
+## Troubleshooting
 
 ### Commands Not Being Captured?
 
@@ -207,7 +207,7 @@ shelltape list -l 1 | grep "test"
 tail -1 ~/.shelltape/commands.jsonl | jq -r '.output'
 ```
 
-## 🎨 Example Workflow
+## Example Workflow
 
 ```bash
 # Start working on a project
@@ -228,19 +228,19 @@ shelltape export -o work-log.md -s "$SHELLTAPE_SESSION_ID"
 shelltape browse
 ```
 
-## 📊 What Gets Captured?
+## What Gets Captured?
 
 For each wrapped command, shelltape captures:
-- ✅ Command text
-- ✅ Full output (stdout + stderr)
-- ✅ Exit code
-- ✅ Execution time (nanosecond precision)
-- ✅ Working directory
-- ✅ Session ID
-- ✅ Timestamp
-- ✅ Shell, hostname, username
+- Command text
+- Full output (stdout + stderr)
+- Exit code
+- Execution time (nanosecond precision)
+- Working directory
+- Session ID
+- Timestamp
+- Shell, hostname, username
 
-## 🚀 Advanced: Automatic Capture Mode
+## Advanced: Automatic Capture Mode
 
 If you want common commands captured automatically, set `SHELLTAPE_AUTO_CAPTURE=1` **before** sourcing the hooks.
 
@@ -280,4 +280,4 @@ Zsh doesn't provide a mechanism to intercept and replace arbitrary command execu
 
 ---
 
-Happy command tracking! 📼
+Happy command tracking!

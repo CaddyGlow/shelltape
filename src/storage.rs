@@ -1,5 +1,5 @@
 use crate::models::{Command, Session, Stats};
-use anyhow::{anyhow, Context, Result};
+use anyhow::{Context, Result, anyhow};
 use chrono::{DateTime, Utc};
 use std::collections::HashMap;
 use std::fs::{File, OpenOptions};
@@ -56,11 +56,10 @@ impl Storage {
                 )
             })?;
 
-        let json = serde_json::to_string(cmd)
-            .with_context(|| "Failed to serialize command to JSON")?;
+        let json =
+            serde_json::to_string(cmd).with_context(|| "Failed to serialize command to JSON")?;
 
-        writeln!(file, "{}", json)
-            .with_context(|| "Failed to write command to file")?;
+        writeln!(file, "{}", json).with_context(|| "Failed to write command to file")?;
 
         Ok(())
     }
@@ -148,8 +147,7 @@ impl Storage {
         let json = serde_json::to_string(session)
             .with_context(|| "Failed to serialize session to JSON")?;
 
-        writeln!(file, "{}", json)
-            .with_context(|| "Failed to write session to file")?;
+        writeln!(file, "{}", json).with_context(|| "Failed to write session to file")?;
 
         Ok(())
     }
@@ -233,8 +231,7 @@ impl Storage {
         for session in sessions {
             let json = serde_json::to_string(session)
                 .with_context(|| "Failed to serialize session to JSON")?;
-            writeln!(file, "{}", json)
-                .with_context(|| "Failed to write session to file")?;
+            writeln!(file, "{}", json).with_context(|| "Failed to write session to file")?;
         }
 
         Ok(())
@@ -257,8 +254,7 @@ impl Storage {
         for cmd in commands {
             let json = serde_json::to_string(cmd)
                 .with_context(|| "Failed to serialize command to JSON")?;
-            writeln!(file, "{}", json)
-                .with_context(|| "Failed to write command to file")?;
+            writeln!(file, "{}", json).with_context(|| "Failed to write command to file")?;
         }
 
         Ok(())

@@ -52,10 +52,16 @@ pub fn show_status() -> Result<()> {
 
             if !commands.is_empty() {
                 if let Some(oldest) = commands.iter().min_by_key(|c| c.started_at) {
-                    println!("  • Oldest: {}", oldest.started_at.format("%Y-%m-%d %H:%M:%S"));
+                    println!(
+                        "  • Oldest: {}",
+                        oldest.started_at.format("%Y-%m-%d %H:%M:%S")
+                    );
                 }
                 if let Some(newest) = commands.iter().max_by_key(|c| c.started_at) {
-                    println!("  • Newest: {}", newest.started_at.format("%Y-%m-%d %H:%M:%S"));
+                    println!(
+                        "  • Newest: {}",
+                        newest.started_at.format("%Y-%m-%d %H:%M:%S")
+                    );
                 }
             }
         }
@@ -111,7 +117,14 @@ fn check_shell_hooks() {
     if bashrc.exists() {
         if let Ok(content) = fs::read_to_string(&bashrc) {
             let installed = content.contains("shelltape") || content.contains("bash.sh");
-            println!("  • Bash (~/.bashrc): {}", if installed { "✓ Installed" } else { "✗ Not installed" });
+            println!(
+                "  • Bash (~/.bashrc): {}",
+                if installed {
+                    "✓ Installed"
+                } else {
+                    "✗ Not installed"
+                }
+            );
         }
     }
 
@@ -120,7 +133,14 @@ fn check_shell_hooks() {
     if zshrc.exists() {
         if let Ok(content) = fs::read_to_string(&zshrc) {
             let installed = content.contains("shelltape") || content.contains("zsh.sh");
-            println!("  • Zsh (~/.zshrc): {}", if installed { "✓ Installed" } else { "✗ Not installed" });
+            println!(
+                "  • Zsh (~/.zshrc): {}",
+                if installed {
+                    "✓ Installed"
+                } else {
+                    "✗ Not installed"
+                }
+            );
         }
     }
 
@@ -129,7 +149,14 @@ fn check_shell_hooks() {
     if fishrc.exists() {
         if let Ok(content) = fs::read_to_string(&fishrc) {
             let installed = content.contains("shelltape") || content.contains("fish.fish");
-            println!("  • Fish (~/.config/fish/config.fish): {}", if installed { "✓ Installed" } else { "✗ Not installed" });
+            println!(
+                "  • Fish (~/.config/fish/config.fish): {}",
+                if installed {
+                    "✓ Installed"
+                } else {
+                    "✗ Not installed"
+                }
+            );
         }
     }
 }

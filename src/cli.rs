@@ -123,6 +123,8 @@ pub enum Shell {
     Zsh,
     /// Fish shell
     Fish,
+    /// PowerShell (Windows)
+    Powershell,
 }
 
 impl Shell {
@@ -132,6 +134,7 @@ impl Shell {
             Shell::Bash => ".bashrc",
             Shell::Zsh => ".zshrc",
             Shell::Fish => ".config/fish/config.fish",
+            Shell::Powershell => "Documents/PowerShell/Microsoft.PowerShell_profile.ps1",
         }
     }
 
@@ -141,11 +144,22 @@ impl Shell {
             Shell::Bash => "bash.sh",
             Shell::Zsh => "zsh.sh",
             Shell::Fish => "fish.fish",
+            Shell::Powershell => "powershell.ps1",
         }
     }
 
     /// Detect the current shell from environment
     pub fn detect() -> Option<Self> {
+        // On Windows, check for PowerShell first
+        #[cfg(target_os = "windows")]
+        {
+            // Check if we're running in PowerShell
+            if std::env::var("PSModulePath").is_ok() {
+                return Some(Shell::Powershell);
+            }
+        }
+
+        // Unix shells use SHELL environment variable
         let shell = std::env::var("SHELL").ok()?;
 
         if shell.contains("bash") {

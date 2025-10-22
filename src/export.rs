@@ -86,7 +86,11 @@ pub fn export_commands(
     fs::write(&output, markdown)
         .with_context(|| format!("Failed to write to: {}", output.display()))?;
 
-    println!("✓ Exported {} commands to {}", commands.len(), output.display());
+    println!(
+        "✓ Exported {} commands to {}",
+        commands.len(),
+        output.display()
+    );
 
     Ok(())
 }

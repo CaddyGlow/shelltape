@@ -50,7 +50,10 @@ pub fn show_stats() -> Result<()> {
             } else {
                 longest_cmd.command.clone()
             };
-            println!("  • Longest Command:  {}ms - {}", longest_cmd.duration_ms, cmd_display);
+            println!(
+                "  • Longest Command:  {}ms - {}",
+                longest_cmd.duration_ms, cmd_display
+            );
         }
         println!();
     }
