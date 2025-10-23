@@ -43,8 +43,8 @@ pub fn execute_with_capture(command: &str, cwd: &str) -> Result<ExecutionResult>
     let (program, args) = parse_command(command);
 
     // Build the command
-    let mut cmd = CommandBuilder::new(program);
-    cmd.args(args);
+    let mut cmd = CommandBuilder::new(&program);
+    cmd.args(&args);
     cmd.cwd(cwd);
 
     // Spawn the command in the PTY
@@ -139,15 +139,42 @@ pub fn execute_with_capture(command: &str, cwd: &str) -> Result<ExecutionResult>
 }
 
 /// Parse a command string into program and arguments
-/// This is a simple parser - for complex commands, consider using a shell
-fn parse_command(command: &str) -> (&str, Vec<&str>) {
-    let parts: Vec<&str> = command.split_whitespace().collect();
-    if parts.is_empty() {
-        return ("", vec![]);
+/// On Windows/PowerShell, wraps the command in powershell.exe
+/// On Unix, splits the command into program and args
+fn parse_command(command: &str) -> (String, Vec<String>) {
+    #[cfg(target_os = "windows")]
+    {
+        // On Windows, check if we're in PowerShell
+        if std::env::var("PSModulePath").is_ok() {
+            // We're in PowerShell - wrap the entire command in powershell.exe
+            // Use pwsh.exe if available, otherwise powershell.exe
+            let ps_exe = if which::which("pwsh.exe").is_ok() {
+                "pwsh.exe"
+            } else {
+                "powershell.exe"
+            };
+
+            // Execute the command through PowerShell with proper encoding
+            return (
+                ps_exe.to_string(),
+                vec![
+                    "-NoProfile".to_string(),
+                    "-NonInteractive".to_string(),
+                    "-Command".to_string(),
+                    command.to_string(),
+                ],
+            );
+        }
     }
 
-    let program = parts[0];
-    let args = parts[1..].to_vec();
+    // Unix or non-PowerShell Windows: simple split
+    let parts: Vec<&str> = command.split_whitespace().collect();
+    if parts.is_empty() {
+        return (String::new(), vec![]);
+    }
+
+    let program = parts[0].to_string();
+    let args = parts[1..].iter().map(|s| s.to_string()).collect();
 
     (program, args)
 }
@@ -180,8 +207,11 @@ mod tests {
 
     #[test]
     fn test_parse_command() {
-        let (prog, args) = parse_command("echo hello world");
-        assert_eq!(prog, "echo");
-        assert_eq!(args, vec!["hello", "world"]);
+        #[cfg(not(target_os = "windows"))]
+        {
+            let (prog, args) = parse_command("echo hello world");
+            assert_eq!(prog, "echo");
+            assert_eq!(args, vec!["hello", "world"]);
+        }
     }
 }
