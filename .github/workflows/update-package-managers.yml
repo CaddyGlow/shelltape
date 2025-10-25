@@ -1,0 +1,34 @@
+name: Update Package Managers
+
+on:
+  # Trigger after CI workflow completes successfully (after assets are built)
+  workflow_run:
+    workflows: ["CI"]
+    types:
+      - completed
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to update (e.g., 0.1.1)'
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  notify:
+    # Only run if CI completed successfully and was triggered by a tag push
+    if: |
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.workflow_run.conclusion == 'success' &&
+       startsWith(github.event.workflow_run.head_branch, 'v'))
+    uses: CaddyGlow/homebrew-packages/.github/workflows/notify-package-managers.yml@main
+    with:
+      tool_name: shelltape
+      version: ${{ github.event.inputs.version || github.event.workflow_run.head_branch }}
+    secrets:
+      APP_ID: ${{ secrets.APP_ID }}
+      APP_PRIVATE_KEY: ${{ secrets.APP_PRIVATE_KEY }}
