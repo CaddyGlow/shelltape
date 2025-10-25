@@ -2,7 +2,7 @@ use crate::cli::Shell;
 use anyhow::{Context, Result, anyhow};
 use std::fs::{self, OpenOptions};
 use std::io::Write;
-use std::path::PathBuf;
+use std::path::Path;
 
 /// Install shell hooks for automatic command recording
 pub fn install(shell: Option<Shell>) -> Result<()> {
@@ -42,7 +42,7 @@ pub fn install(shell: Option<Shell>) -> Result<()> {
 }
 
 /// Copy the appropriate hook file to ~/.shelltape/
-fn copy_hook_file(shelltape_dir: &PathBuf, shell: Shell) -> Result<()> {
+fn copy_hook_file(shelltape_dir: &Path, shell: Shell) -> Result<()> {
     let hook_content = match shell {
         Shell::Bash => include_str!("../shell-hooks/bash.sh"),
         Shell::Zsh => include_str!("../shell-hooks/zsh.sh"),

@@ -132,6 +132,7 @@ impl Storage {
     }
 
     /// Append a session to the sessions file
+    #[allow(dead_code)]
     pub fn append_session(&self, session: &Session) -> Result<()> {
         let mut file = OpenOptions::new()
             .create(true)
@@ -191,6 +192,7 @@ impl Storage {
     }
 
     /// Update a session's end time
+    #[allow(dead_code)]
     pub fn update_session(&self, session_id: &str, ended_at: DateTime<Utc>) -> Result<()> {
         let mut sessions = self.read_all_sessions()?;
 
@@ -215,6 +217,7 @@ impl Storage {
     }
 
     /// Rewrite the sessions file with the provided sessions
+    #[allow(dead_code)]
     fn rewrite_sessions(&self, sessions: &[Session]) -> Result<()> {
         let mut file = OpenOptions::new()
             .write(true)

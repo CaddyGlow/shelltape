@@ -1,7 +1,7 @@
 use crate::models::Command;
 use crate::storage::Storage;
 use anyhow::{Context, Result};
-use chrono::{DateTime, Utc};
+use chrono::DateTime;
 
 /// Command recorder that captures command execution details
 pub struct Recorder {
@@ -19,6 +19,7 @@ impl Recorder {
     }
 
     /// Create a new Recorder with custom storage
+    #[allow(dead_code)]
     pub fn with_storage(storage: Storage) -> Self {
         Self {
             storage,
@@ -27,6 +28,7 @@ impl Recorder {
     }
 
     /// Set the maximum output size in bytes
+    #[allow(dead_code)]
     pub fn with_max_output_size(mut self, size: usize) -> Self {
         self.max_output_size = size;
         self
@@ -104,6 +106,7 @@ impl Default for Recorder {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use chrono::Utc;
     use tempfile::tempdir;
 
     #[test]

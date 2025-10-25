@@ -15,6 +15,7 @@ pub enum ViewMode {
 /// The main TUI application state
 pub struct App {
     /// Storage instance
+    #[allow(dead_code)]
     pub storage: Storage,
     /// All commands loaded from storage
     pub commands: Vec<Command>,
