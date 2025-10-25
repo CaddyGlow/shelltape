@@ -59,8 +59,19 @@ fn run_app<B: ratatui::backend::Backend>(terminal: &mut Terminal<B>, app: &mut A
         terminal.draw(|f| ui::draw(f, app))?;
 
         // Handle events
-        if let Event::Key(key) = events::read_event()? {
-            events::handle_key_event(app, key)?;
+        let event = events::read_event()?;
+
+        // Only handle KeyPress events, ignore KeyRelease and KeyRepeat
+        // This prevents duplicate events on Windows and other platforms
+        if let Event::Key(key) = event {
+            use crossterm::event::KeyEventKind;
+
+            // Only process Press events, ignore Release and Repeat
+            // This is critical on Windows where we get both Press and Release events
+            // for a single key press, which would cause double-triggering
+            if key.kind == KeyEventKind::Press {
+                events::handle_key_event(app, key)?;
+            }
         }
 
         // Check if we should quit

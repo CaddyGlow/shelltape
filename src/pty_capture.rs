@@ -3,7 +3,7 @@ use portable_pty::{CommandBuilder, NativePtySystem, PtySize, PtySystem};
 use std::io::{Read, Write};
 use std::sync::{Arc, Mutex};
 use std::thread;
-use std::time::{SystemTime, UNIX_EPOCH};
+use std::time::{Duration, SystemTime, UNIX_EPOCH};
 
 /// Result of command execution with captured output
 pub struct ExecutionResult {
@@ -90,13 +90,17 @@ pub fn execute_with_capture(command: &str, cwd: &str) -> Result<ExecutionResult>
     let mut writer = pair.master.take_writer().context("Failed to get writer")?;
 
     // Spawn thread to forward stdin to PTY (for interactive commands)
-    let stdin_thread = thread::spawn(move || {
+    // This thread will be orphaned when the child exits - that's OK since
+    // stdin.read() is blocking and we can't easily interrupt it.
+    // The thread will exit when the process ends.
+    thread::spawn(move || {
         let mut stdin = std::io::stdin();
         let mut buffer = [0u8; 8192];
         loop {
             match stdin.read(&mut buffer) {
                 Ok(0) => break,
                 Ok(n) => {
+                    // If write fails, PTY is closed, so exit
                     if writer.write_all(&buffer[..n]).is_err() {
                         break;
                     }
@@ -112,11 +116,27 @@ pub fn execute_with_capture(command: &str, cwd: &str) -> Result<ExecutionResult>
     // Wait for child to exit
     let exit_status = child.wait().context("Failed to wait for child")?;
 
-    // Wait for read thread to finish
-    let _ = read_thread.join();
+    // Close the master PTY to signal EOF to the read thread
+    drop(pair.master);
 
-    // stdin_thread will stop when child exits and writer is dropped
-    drop(stdin_thread);
+    // Wait for read thread to finish with a timeout
+    // On some platforms (especially Windows), the PTY might not send EOF properly
+    // So we give it a short timeout and then continue anyway
+    let join_handle = read_thread;
+    let timeout = Duration::from_millis(100);
+    let start = std::time::Instant::now();
+
+    while !join_handle.is_finished() && start.elapsed() < timeout {
+        thread::sleep(Duration::from_millis(10));
+    }
+
+    // If thread is still running, that's OK - we have the output we need
+    // The thread will be terminated when the process exits
+
+    // Note: We don't wait for the stdin thread because stdin.read() is blocking.
+    // When the child exits and we drop the writer, the stdin thread will detect
+    // the error on its next write attempt and exit. If it's blocked on read,
+    // it will be cleaned up when the process exits.
 
     let end_time = SystemTime::now()
         .duration_since(UNIX_EPOCH)
